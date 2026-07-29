@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>For My Mishy ❤️</title>
+  
+  <!-- Canvas Confetti Library -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #4a001b;
+      --bg-border: #72092c;
+      --card-bg: #fffbf7;
+      --accent-pink: #ffb7c5;
+      --accent-dark-pink: #d6336c;
+      --glow-color: rgba(255, 183, 197, 0.4);
+      --text-color: #333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Georgia', serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #72092c 0%, #300010 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background Glow Effects */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: var(--glow-color);
+      filter: blur(100px);
+      border-radius: 50%;
+      z-index: 0;
+      animation: pulseGlow 6s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(1.4); opacity: 0.8; }
+    }
+
+    /* Floating Canvas Effects (Cherry Blossom & Hearts) */
+    .floating-container {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      bottom: -50px;
+      animation: floatUp 7s linear infinite;
+      opacity: 0.8;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+      100% { transform: translateY(-105vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* App Shell */
+    .app-wrapper {
+      width: 100%;
+      max-width: 440px;
+      background-color: #fff0f3;
+      border: 6px solid var(--accent-pink);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.5), 0 0 20px var(--glow-color);
+      position: relative;
+      min-height: 720px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Music Play/Pause Button */
+    .music-btn {
+      position: absolute;
+      top: 15px; right: 15px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid var(--accent-dark-pink);
+      border-radius: 50%;
+      width: 42px; height: 42px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      z-index: 10;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+
+    .music-btn:active { transform: scale(0.9); }
+
+    /* Page Navigation */
+    .page {
+      display: none;
+      padding: 24px 18px;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .page.active { display: flex; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Navigation Buttons */
+    .nav-btn {
+      background: var(--bg-border);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover { background: var(--accent-dark-pink); }
+
+    /* PAGE 1: ENVELOPE & GREETING CARD */
+    .title {
+      font-size: 1.8rem;
+      color: var(--bg-border);
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .envelope-wrapper {
+      perspective: 1000px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .envelope {
+      width: 270px;
+      height: 180px;
+      background: #f1b3c4;
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      border: 2px solid #e0829d;
+      transition: transform 0.4s ease;
+    }
+
+    .envelope:hover { transform: scale(1.03); }
+
+    .envelope-img {
+      width: 88%;
+      height: 82%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .seal-btn {
+      position: absolute;
+      width: 52px; height: 52px;
+      background-color: var(--accent-dark-pink);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .tap-text {
+      margin-top: 18px;
+      font-size: 0.9rem;
+      color: #777;
+      font-style: italic;
+    }
+
+    /* Live Counter */
+    .counter-badge {
+      margin-top: 25px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px dashed var(--accent-dark-pink);
+      padding: 12px 18px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--bg-border);
+      line-height: 1.5;
+    }
+
+    /* PAGE 2: TYPEWRITER LETTER */
+    .letter-container {
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      border: 1px solid #f0d0d8;
+      margin-top: 15px;
+    }
+
+    .letter-heading {
+      font-size: 1.4rem;
+      color: var(--bg-border);
+      margin-bottom: 12px;
+    }
+
+    .letter-body {
+      display: flex;
+      gap: 12px;
+    }
+
+    .letter-img {
+      width: 38%;
+      height: 210px;
+      object-fit: cover;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .lined-paper {
+      width: 62%;
+      background: repeating-linear-gradient(#fff, #fff 23px, #e5d4ce 24px);
+      line-height: 24px;
+      font-size: 0.82rem;
+      color: #333;
+      padding-top: 2px;
+      height: 230px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    /* PAGE 3: SCRAPBOOK (8 Photos) */
+    .scrapbook-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .polaroid {
+      background: #fff;
+      padding: 8px 8px 18px 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+      border-radius: 4px;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #555;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .polaroid:hover { transform: scale(1.05) rotate(0deg) !important; }
+
+    .polaroid img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 2px;
+      margin-bottom: 6px;
+    }
+
+    .rot-l1 { transform: rotate(-3deg); }
+    .rot-r1 { transform: rotate(3deg); }
+    .rot-l2 { transform: rotate(-2deg); }
+    .rot-r2 { transform: rotate(4deg); }
+
+    .note-card {
+      background: #fff4f7;
+      border: 1px solid #f3c2d0;
+      border-radius: 12px;
+      padding: 12px;
+      grid-column: span 2;
+      margin-top: 5px;
+    }
+
+    .note-card h4 {
+      color: var(--accent-dark-pink);
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .note-card ul {
+      list-style-type: '💖 ';
+      padding-left: 18px;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    /* PAGE 4: SECRET GIFT & FINAL PAGE */
+    .gift-box-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .gift-box {
+      font-size: 80px;
+      cursor: pointer;
+      animation: bounce 1.5s infinite;
+      transition: transform 0.3s;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .final-card {
+      display: none;
+      background: white;
+      padding: 22px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-top: 15px;
+      animation: fadeIn 0.8s ease-in-out forwards;
+    }
+
+    .final-card h3 {
+      color: var(--accent-dark-pink);
+      margin-bottom: 12px;
+    }
+
+    .final-card p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .signature {
+      margin-top: 15px;
+      font-style: italic;
+      font-weight: bold;
+      color: var(--bg-border);
+      text-align: right;
+    }
+
+    /* TAP TO ZOOM MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Background Elements -->
+  <div class="floating-container" id="floatingContainer"></div>
+
+  <!-- Background Music -->
+  <audio id="bgMusic" src="music/song.mp3" loop></audio>
+
+  <!-- App Wrapper -->
+  <div class="app-wrapper">
+    
+    <!-- Music Button -->
+    <button class="music-btn" id="musicToggle" onclick="toggleMusic()">🎵</button>
+
+    <!-- PAGE 1: COVER / ENVELOPE -->
+    <div class="page active" id="page1">
+      <h2 class="title">Happy Girlfriend's Day</h2>
+      
+      <div class="envelope-wrapper" onclick="goToPage(2)">
+        <div class="envelope">
+          <img src="images/photo1.jpg" class="envelope-img" alt="Cover photo" onerror="this.src='https://picsum.photos/300/200?romantic'">
+          <div class="seal-btn">M</div>
+        </div>
+      </div>
+      
+      <p class="tap-text">Tap the envelope to open 💌</p>
+
+      <!-- Live Counter -->
+      <div class="counter-badge" id="relationshipCounter">
+        Calculating our time together... ❤️
+      </div>
+    </div>
+
+    <!-- PAGE 2: TYPEWRITER LOVE LETTER -->
+    <div class="page" id="page2">
+      <button class="nav-btn" style="align-self: flex-start;" onclick="goToPage(1)">← Back</button>
+      
+      <div class="letter-container">
+        <h3 class="letter-heading">Dear Mishy,</h3>
+        <div class="letter-body">
+          <img src="images/photo2.jpg" class="letter-img" alt="Letter Side Photo" onclick="openModal(this.src)" onerror="this.src='https://picsum.photos/150/250?flowers'">
+          <div class="lined-paper" id="typedLetter"></div>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="nav-btn" onclick="goToPage(1)">Back</button>
+        <button class="nav-btn" onclick="goToPage(3)">Scrapbook →</button>
+      </div>
+    </div>
+
+    <!-- PAGE 3: SCRAPBOOK (8 Photos) -->
+    <div class="page" id="page3">
+      <button class="nav-btn" style="align-self: flex-start;" onclick="goToPage(2)">← Back</button>
+      
+      <div class="scrapbook-grid">
+        <div class="polaroid rot-l1" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo1.jpg" alt="Memory 1" onerror="this.src='https://picsum.photos/200/200?couple1'">
+          <span>My Favorite Person</span>
+        </div>
+        <div class="polaroid rot-r1" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo2.jpg" alt="Memory 2" onerror="this.src='https://picsum.photos/200/200?couple2'">
+          <span>My Happiness</span>
+        </div>
+        <div class="polaroid rot-r2" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo3.jpg" alt="Memory 3" onerror="this.src='https://picsum.photos/200/200?couple3'">
+          <span>Cutest Smile</span>
+        </div>
+        <div class="polaroid rot-l2" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo4.jpg" alt="Memory 4" onerror="this.src='https://picsum.photos/200/200?couple4'">
+          <span>Best Moments</span>
+        </div>
+        <div class="polaroid rot-l1" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo5.jpg" alt="Memory 5" onerror="this.src='https://picsum.photos/200/200?couple5'">
+          <span>My Safe Place</span>
+        </div>
+        <div class="polaroid rot-r1" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo6.jpg" alt="Memory 6" onerror="this.src='https://picsum.photos/200/200?couple6'">
+          <span>Pure Joy</span>
+        </div>
+        <div class="polaroid rot-r2" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo7.jpg" alt="Memory 7" onerror="this.src='https://picsum.photos/200/200?couple7'">
+          <span>Together Forever</span>
+        </div>
+        <div class="polaroid rot-l2" onclick="openModal(this.querySelector('img').src)">
+          <img src="images/photo8.jpg" alt="Memory 8" onerror="this.src='https://picsum.photos/200/200?couple8'">
+          <span>The Goal 💖</span>
+        </div>
+
+        <div class="note-card">
+          <h4>Reasons Why I Love You</h4>
+          <ul>
+            <li>You understand me like no one else.</li>
+            <li>You make me smile even on hard days.</li>
+            <li>You are my peace in all the chaos.</li>
+            <li>You're my today and all my tomorrows.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button class="nav-btn" onclick="goToPage(2)">Back</button>
+        <button class="nav-btn" onclick="goToPage(4)">Secret Gift 🎁</button>
+      </div>
+    </div>
+
+    <!-- PAGE 4: SECRET GIFT & FINAL PAGE -->
+    <div class="page" id="page4">
+      <button class="nav-btn" style="align-self: flex-start;" onclick="goToPage(3)">← Back</button>
+      
+      <div class="gift-box-container">
+        <h3 style="color: var(--bg-border); margin-bottom: 10px;">A Special Gift For You!</h3>
+        <p style="font-size: 0.85rem; color: #666; margin-bottom: 20px;">Tap the box to open 🎁</p>
+        
+        <div class="gift-box" id="giftBox" onclick="openGift()">🎁</div>
+
+        <div class="final-card" id="finalCard">
+          <h3>To My Dearest Mishy 💖</h3>
+          <p>
+            You are not just my girlfriend — you’re my best friend, my safe place, and my greatest blessing. Thank you for making life so incredibly beautiful.
+          </p>
+          <p style="margin-top: 10px;">
+            Happy Girlfriend's Day, my love! I love you forever and always. 🥂✨
+          </p>
+          <div class="signature">— Yours Forever, Babba ❤️</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Zoom Image Modal -->
+  <div class="modal" id="imgModal" onclick="closeModal()">
+    <img id="modalImg" src="" alt="Enlarged View">
+  </div>
+
+  <script>
+    /* 1. MUSIC PLAY/PAUSE CONTROL */
+    const audio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicToggle');
+    let isPlaying = false;
+
+    function toggleMusic() {
+      if (isPlaying) {
+        audio.pause();
+        musicBtn.textContent = '🔇';
+      } else {
+        audio.play().catch(() => {});
+        musicBtn.textContent = '🎵';
+      }
+      isPlaying = !isPlaying;
+    }
+
+    /* 2. CHERRY BLOSSOMS & FLOATING HEARTS */
+    const container = document.getElementById('floatingContainer');
+    const symbols = ['🌸', '💖', '✨', '💕', '🌺', '🌸'];
+
+    function createParticle() {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (Math.random() * 3 + 6) + 's';
+      p.style.fontSize = (Math.random() * 10 + 16) + 'px';
+      container.appendChild(p);
+
+      setTimeout(() => { p.remove(); }, 9000);
+    }
+    setInterval(createParticle, 400);
+
+    /* 3. "TOGETHER SINCE" COUNTER (27 September 2025) */
+    const startDate = new Date('2025-09-27T00:00:00');
+
+    function updateCounter() {
+      const now = new Date();
+      const diff = now - startDate;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      document.getElementById('relationshipCounter').innerHTML = 
+        `Together Since 27 September 2025 ❤️<br><b>${days}d ${hours}h ${minutes}m ${seconds}s</b>`;
+    }
+    setInterval(updateCounter, 1000);
+    updateCounter();
+
+    /* 4. TYPEWRITER EFFECT FOR MISHY */
+    const letterText = `I know I don't say it enough, so let me say it properly today: you are, hands down, the best part of my life.
+
+You turn the most ordinary days into something worth remembering. Your laugh is my favorite sound, your hugs are my favorite place, and your heart is honestly the softest, kindest thing I know.
+
+Thank you for choosing me every single day. Happy Girlfriend's Day, my love!`;
+
+    let typeIndex = 0;
+    let typed = false;
+
+    function typeWriter() {
+      if (typeIndex < letterText.length) {
+        document.getElementById('typedLetter').textContent += letterText.charAt(typeIndex);
+        typeIndex++;
+        setTimeout(typeWriter, 35);
+      }
+    }
+
+    /* 5. PAGE NAVIGATION */
+    function goToPage(pageNumber) {
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.classList.remove('active'));
+      
+      document.getElementById(`page${pageNumber}`).classList.add('active');
+
+      if (pageNumber === 2 && !typed) {
+        typed = true;
+        typeWriter();
+      }
+
+      if (!isPlaying) {
+        audio.play().then(() => { isPlaying = true; musicBtn.textContent = '🎵'; }).catch(() => {});
+      }
+    }
+
+    /* 6. PHOTO ZOOM MODAL */
+    function openModal(src) {
+      document.getElementById('modalImg').src = src;
+      document.getElementById('imgModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('imgModal').style.display = 'none';
+    }
+
+    /* 7. GIFT BOX & CONFETTI CELEBRATION */
+    function openGift() {
+      document.getElementById('giftBox').style.display = 'none';
+      document.getElementById('finalCard').style.display = 'block';
+
+      confetti({
+        particleCount: 150,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    }
+  </script>
+</body>
+</html>
